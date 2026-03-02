@@ -42,8 +42,8 @@ function ButtonGroup<T extends string | number>({
           onClick={() => onChange(option)}
           className={
             value === option
-              ? "rounded border btn-accent bg-accent px-2 py-1 text-xs text-white"
-              : "rounded border border-theme surface px-2 py-1 text-xs"
+              ? "rounded border btn-accent bg-accent px-2 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-white"
+              : "rounded border border-theme surface px-2 py-1 text-xs font-semibold uppercase tracking-[0.06em]"
           }
         >
           {String(option).toLowerCase()}
@@ -65,15 +65,23 @@ function ToggleRow({
   return (
     <label className="mt-2 flex items-center justify-between gap-2 text-xs">
       <span>{label}</span>
-      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        className={`ios-switch ${checked ? "ios-switch-on" : ""}`}
+        onClick={() => onChange(!checked)}
+      >
+        <span className="ios-switch-thumb" />
+      </button>
     </label>
   );
 }
 
 export function PreferencesSidebar({ preferences, onPatch }: PreferencesSidebarProps) {
   return (
-    <aside className="h-full overflow-y-auto rounded-lg border border-theme surface p-3 shadow-lg">
-      <h2 className="font-semibold uppercase tracking-[0.06em]" style={{ fontFamily: "var(--font-heading)" }}>
+    <aside className="h-full overflow-y-auto rounded-md border border-theme surface p-3 shadow-lg">
+      <h2 className="font-semibold uppercase tracking-[0.08em]" style={{ fontFamily: "var(--ff-sans-condensed)" }}>
         Preferences
       </h2>
 

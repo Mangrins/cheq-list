@@ -13,11 +13,7 @@ interface TopAccentBarProps {
 }
 
 function IconShell({ children, active = false }: { children: React.ReactNode; active?: boolean }) {
-  return (
-    <span className={active ? "flex h-7 w-7 items-center justify-center rounded-sm bg-white/20" : "flex h-7 w-7 items-center justify-center rounded-sm hover:bg-white/15"}>
-      {children}
-    </span>
-  );
+  return <span className={`ui-app-btn ${active ? "is-active" : ""}`}>{children}</span>;
 }
 
 function IconPlanner() {
@@ -74,41 +70,48 @@ function IconButton({
 }) {
   if (href) {
     return (
-      <Link href={href} className="text-white/95" aria-label={title} title={title}>
+      <Link href={href} aria-label={title} title={title}>
         <IconShell active={active}>{icon}</IconShell>
       </Link>
     );
   }
 
   return (
-    <button type="button" className="text-white/95" aria-label={title} title={title} onClick={onClick}>
+    <button type="button" aria-label={title} title={title} onClick={onClick}>
       <IconShell active={active}>{icon}</IconShell>
     </button>
   );
 }
 
 export function TopAccentBar({ mode, rangeLabel, searchQuery, onSearchChange, onTogglePrefs }: TopAccentBarProps) {
-  return (
-    <div className="fixed inset-x-0 top-0 z-50 h-9 border-b border-black/10 bg-accent text-white">
-      <div className="mx-auto flex h-full items-center justify-between px-3">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="pr-2 text-[12px] font-semibold tracking-[0.08em] text-white/90" style={{ fontFamily: "var(--font-heading)" }}>
-            CHEQLIST
-          </Link>
-          {rangeLabel ? <span className="ml-2 text-[11px] text-white/90">{rangeLabel}</span> : null}
-        </div>
+  const showSearch = mode === "planner" && Boolean(onSearchChange);
 
-        <div className="flex items-center gap-2">
-          {mode === "planner" && onSearchChange ? (
+  return (
+    <div className="app-header-shell">
+      <div className="app-header-grid">
+        <div className="min-w-0 justify-self-start">
+          {showSearch ? (
             <input
               value={searchQuery ?? ""}
-              onChange={(event) => onSearchChange(event.target.value)}
-              placeholder="Search"
-              className="h-7 w-44 rounded-sm border border-white/35 bg-white/15 px-2 text-[12px] text-white placeholder:text-white/70 outline-none"
+              onChange={(event) => onSearchChange?.(event.target.value)}
+              placeholder="Search tasks"
+              className="ui-app-search max-w-[15rem]"
               aria-label="Search tasks"
             />
+          ) : rangeLabel ? (
+            <span className="block truncate text-[0.6111111111rem] font-bold uppercase tracking-[0.08em] text-muted">
+              {rangeLabel}
+            </span>
           ) : null}
+        </div>
 
+        <div className="justify-self-center">
+          <Link href="/" className="app-logo-wordmark inline-flex items-center justify-center">
+            CHEQLIST
+          </Link>
+        </div>
+
+        <div className="flex items-center justify-self-end gap-[0.2222222222rem]">
           <IconButton href="/" title="Planner" active={mode === "planner"} icon={<IconPlanner />} />
           <IconButton href="/focus" title="Focus" active={mode === "focus" || mode === "today"} icon={<IconClock />} />
           <IconButton href="/analytics" title="Analytics" active={mode === "analytics"} icon={<IconChart />} />

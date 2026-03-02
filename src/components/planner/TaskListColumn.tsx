@@ -87,7 +87,7 @@ export function TaskListColumn({
         <div className="flex items-start justify-between gap-1">
           <div className={variant === "day" ? "w-full text-center" : "min-w-0 flex-1 text-center"}>
             {variant === "day" ? (
-              <h3 className="day-title" style={highlightTitle ? { color: "var(--accent)" } : undefined}>
+              <h3 className="day-title" style={highlightTitle ? { color: "var(--custom-color-highlight)" } : undefined}>
                 {title}
               </h3>
             ) : (

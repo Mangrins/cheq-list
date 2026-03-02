@@ -35,7 +35,7 @@ export function BottomListColumn({ list, onDeleteList, ...rest }: BottomListColu
         list.kind === "CUSTOM" && onDeleteList ? (
           <button
             type="button"
-            className="rounded px-1 text-[14px] leading-none text-muted hover:text-[var(--accent)]"
+            className="rounded px-1 text-[14px] leading-none text-muted hover:text-[var(--custom-color)]"
             title="Delete list"
             aria-label={`Delete list ${list.name}`}
             onClick={() => void onDeleteList(list)}

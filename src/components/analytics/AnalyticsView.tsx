@@ -52,11 +52,15 @@ export function AnalyticsView() {
         onTogglePrefs={() => setPrefsOpen((prev) => !prev)}
       />
 
-      <div ref={prefsRef} className="fixed right-3 top-11 z-50 w-[290px]">
+      <div
+        ref={prefsRef}
+        className="fixed right-3 z-50 w-[290px]"
+        style={{ top: "calc(var(--ui-toolbar-height) + var(--ui-top-border-width) + 0.3333333333rem)" }}
+      >
         {prefsOpen ? <PreferencesSidebar preferences={preferences} onPatch={patchPreferences} /> : null}
       </div>
 
-      <div className="px-4 pt-12 pb-4">
+      <div className="planner-main-shell px-4 pt-3 pb-4">
         <div className="mb-4 flex items-center gap-2">
           <button className="rounded border border-theme surface px-2 py-1 text-sm" onClick={prevWeek}>Prev</button>
           <button className="rounded border border-theme surface px-2 py-1 text-sm" onClick={nextWeek}>Next</button>

@@ -151,7 +151,7 @@ export function RecurrenceEditorModal({
                     }}
                     className={
                       selected
-                        ? "rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs text-white"
+                        ? "rounded border btn-accent bg-accent px-2 py-1 text-xs text-white"
                         : "rounded border border-theme px-2 py-1 text-xs"
                     }
                   >

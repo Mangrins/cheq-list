@@ -66,11 +66,8 @@ export function TaskItem({
       ref={setNodeRef}
       style={style}
       data-task-item="true"
-      className={clsx(
-        "task-row group mb-0.5 flex items-start gap-2 rounded surface",
-        showLines ? "border border-theme" : "border border-transparent",
-        isDragging && "opacity-50",
-      )}
+      data-completed={task.completed ? "true" : "false"}
+      className={clsx("task-row group", !showLines && "task-row-no-lines", isDragging && "opacity-50")}
       {...attributes}
       {...listeners}
     >
@@ -78,15 +75,12 @@ export function TaskItem({
         type="button"
         onPointerDown={(event) => event.stopPropagation()}
         onClick={() => void onToggle(task.id)}
-        className={clsx(
-          "mt-[0.35em] size-3 rounded-full border",
-          task.completed ? "border-transparent" : "border-theme",
-        )}
-        style={task.completed ? { background: accentColorMap[accentColor], borderColor: accentColorMap[accentColor] } : undefined}
+        className={clsx("task-checkbox", task.completed && "is-complete")}
+        style={task.completed ? { color: accentColorMap[accentColor] } : undefined}
         aria-label={task.completed ? "Mark incomplete" : "Mark complete"}
       />
 
-      {bullet ? <span className="task-text mt-[0.02em] text-muted">{bullet}</span> : null}
+      {bullet ? <span className="task-text text-muted">{bullet}</span> : null}
 
       <div className="min-w-0 flex-1">
         {editing ? (
@@ -125,7 +119,7 @@ export function TaskItem({
               setDraft(task.title);
               onStartEdit(task.id);
             }}
-            className={clsx("task-text w-full text-left", task.completed && "text-muted line-through")}
+            className="task-text w-full text-left"
           >
             {task.title}
           </button>
@@ -137,10 +131,7 @@ export function TaskItem({
           type="button"
           onPointerDown={(event) => event.stopPropagation()}
           onClick={() => onEditRecurring(task.id)}
-          className={clsx(
-            "transition",
-            task.seriesId ? "task-recurring-indicator opacity-100 text-[var(--accent)]" : "opacity-0 group-hover:opacity-100",
-          )}
+          className={clsx("task-action-btn", task.seriesId && "task-recurring-indicator opacity-100 visible")}
           aria-label="Edit recurring"
           title="Edit task"
         >
@@ -152,7 +143,7 @@ export function TaskItem({
         type="button"
         onPointerDown={(event) => event.stopPropagation()}
         onClick={() => void onDelete(task.id)}
-        className="opacity-0 transition group-hover:opacity-100"
+        className="task-action-btn"
         aria-label="Delete task"
       >
         ×

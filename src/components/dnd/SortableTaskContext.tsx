@@ -25,7 +25,7 @@ export function SortableTaskContext({ container, tasks, children }: SortableTask
     <div
       ref={setNodeRef}
       className="min-h-[220px] rounded-sm"
-      style={isOver ? { background: "color-mix(in oklab, var(--accent) 9%, transparent)" } : undefined}
+      style={isOver ? { background: "color-mix(in oklab, var(--custom-color) 9%, transparent)" } : undefined}
     >
       <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
         {children}

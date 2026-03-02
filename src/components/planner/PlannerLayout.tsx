@@ -55,7 +55,7 @@ function triggerCelebration() {
       node.style.position = "fixed";
       node.style.left = `${15 + Math.random() * 70}%`;
       node.style.top = `${20 + Math.random() * 40}%`;
-      node.style.color = "var(--accent)";
+      node.style.color = "var(--custom-color)";
       node.style.fontSize = "18px";
       node.style.pointerEvents = "none";
       node.style.opacity = "0.85";
@@ -152,11 +152,15 @@ function PlannerChrome({
         onTogglePrefs={() => setPrefsOpen((prev) => !prev)}
       />
 
-      <div ref={prefsRef} className="fixed right-3 top-11 z-50 w-[290px]">
+      <div
+        ref={prefsRef}
+        className="fixed right-3 z-50 w-[290px]"
+        style={{ top: "calc(var(--ui-toolbar-height) + var(--ui-top-border-width) + 0.3333333333rem)" }}
+      >
         {prefsOpen ? <PreferencesSidebar preferences={preferences} onPatch={onPatchPreferences} /> : null}
       </div>
 
-      <div className="h-[calc(100vh-36px)] pt-9 tab-view-enter">{children}</div>
+      <div className="planner-main-shell tab-view-enter">{children}</div>
     </div>
   );
 }
@@ -359,7 +363,7 @@ export function PlannerLayout({ lists, tasks, showBottomLists = true }: PlannerL
       preferences={preferences}
       onPatchPreferences={patchPreferences}
     >
-      <div className="planner-canvas px-4 py-2">
+      <div className="planner-canvas">
         <PlannerDndProvider tasks={visibleTasks} onDragStartTask={setDraggingTaskId} onMoveTask={handleMove} allowCrossTypeMoves>
           <section className="planner-top">
             <WeekGrid
