@@ -12,6 +12,37 @@ function weekKey(date: Date): string {
   return format(startOfWeek(date, { weekStartsOn: 0 }), "yyyy-MM-dd");
 }
 
+function forEachHourSlice(
+  startMs: number,
+  endMs: number,
+  onSlice: (sliceStartMs: number, sliceEndMs: number) => void,
+): void {
+  let cursor = startMs;
+  while (cursor < endMs) {
+    const nextHour = new Date(cursor);
+    nextHour.setMinutes(0, 0, 0);
+    nextHour.setHours(nextHour.getHours() + 1);
+    const sliceEnd = Math.min(nextHour.getTime(), endMs);
+    onSlice(cursor, sliceEnd);
+    cursor = sliceEnd;
+  }
+}
+
+function forEachDaySlice(
+  startMs: number,
+  endMs: number,
+  onSlice: (sliceStartMs: number, sliceEndMs: number) => void,
+): void {
+  let cursor = startMs;
+  while (cursor < endMs) {
+    const nextDay = new Date(cursor);
+    nextDay.setHours(24, 0, 0, 0);
+    const sliceEnd = Math.min(nextDay.getTime(), endMs);
+    onSlice(cursor, sliceEnd);
+    cursor = sliceEnd;
+  }
+}
+
 export function useAnalyticsWeek() {
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 0 }));
   const [nowTick, setNowTick] = useState(Date.now());
@@ -39,6 +70,8 @@ export function useAnalyticsWeek() {
   }, [weekStart]);
 
   const key = weekKey(weekStart);
+  const weekStartMs = weekStart.getTime();
+  const weekEndMs = weekStartMs + 7 * 24 * 60 * 60 * 1000;
 
   const sessions = useLiveQuery(async () => db.focusSessions.where("weekKey").equals(key).toArray(), [key], []);
 
@@ -62,20 +95,43 @@ export function useAnalyticsWeek() {
   const dailyTotals = useMemo(() => {
     const totals: number[] = Array.from({ length: 7 }, () => 0);
     for (const session of withRealtime) {
-      const dayIndex = new Date(`${session.dayKey}T00:00:00`).getDay(); // 0=Sun..6=Sat
-      totals[dayIndex] += session.durationSec ?? 0;
+      const durationSec = Math.max(0, session.durationSec ?? 0);
+      if (durationSec <= 0) continue;
+
+      const startMs = new Date(session.startAt).getTime();
+      const endMs = startMs + durationSec * 1000;
+      const clampedStart = Math.max(startMs, weekStartMs);
+      const clampedEnd = Math.min(endMs, weekEndMs);
+      if (clampedStart >= clampedEnd) continue;
+
+      forEachDaySlice(clampedStart, clampedEnd, (sliceStartMs, sliceEndMs) => {
+        const dayIndex = Math.floor((sliceStartMs - weekStartMs) / (24 * 60 * 60 * 1000));
+        if (dayIndex < 0 || dayIndex > 6) return;
+        totals[dayIndex] += (sliceEndMs - sliceStartMs) / 1000;
+      });
     }
     return totals;
-  }, [withRealtime]);
+  }, [withRealtime, weekStartMs, weekEndMs]);
 
   const hourTotals = useMemo(() => {
     const hours = Array.from({ length: 24 }, () => 0);
     for (const session of withRealtime) {
-      const hour = new Date(session.startAt).getHours();
-      hours[hour] += session.durationSec ?? 0;
+      const durationSec = Math.max(0, session.durationSec ?? 0);
+      if (durationSec <= 0) continue;
+
+      const startMs = new Date(session.startAt).getTime();
+      const endMs = startMs + durationSec * 1000;
+      const clampedStart = Math.max(startMs, weekStartMs);
+      const clampedEnd = Math.min(endMs, weekEndMs);
+      if (clampedStart >= clampedEnd) continue;
+
+      forEachHourSlice(clampedStart, clampedEnd, (sliceStartMs, sliceEndMs) => {
+        const hour = new Date(sliceStartMs).getHours();
+        hours[hour] += (sliceEndMs - sliceStartMs) / 1000;
+      });
     }
     return hours;
-  }, [withRealtime]);
+  }, [withRealtime, weekStartMs, weekEndMs]);
 
   return {
     weekStart,
